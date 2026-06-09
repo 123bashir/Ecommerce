@@ -1,0 +1,44 @@
+/* Reset and base styles */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f2f5;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+/* Utility classes */
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Responsive text */
+h1,
+h2,
+h3 {
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    .center {
+        flex-direction: column;
+    }
+}
