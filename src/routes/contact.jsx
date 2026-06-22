@@ -7,13 +7,13 @@ const BRANCH_ADDRESSES = [
     name: "Medile Branch",
     address: "Sabuwar Gandu, Medile Road, Kano",
     phone: "+234 806 160 5271",
-    email: "medile@almubarak.ng"
+    email: "medile@ibgeneral.ng"
   },
   {
     name: "Bakin Asibiti Branch",
     address: "Gwarzo Road , Bakin Asibiti, Kano",
     phone: "+234 806 160 5271",
-    email: "asibiti@almubarak.ng"
+    email: "asibiti@ibgeneral.ng"
   }
 ];
 
@@ -169,7 +169,7 @@ export default function Contact() {
           </div>
           <div className="footer-bottom">
             <div className="container text-center">
-              <p>© {new Date().getFullYear()} Almubarak Cosmetics. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} IB General Ent. All rights reserved.</p>
             </div>
           </div>
         </footer>

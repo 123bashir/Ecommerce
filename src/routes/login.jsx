@@ -155,7 +155,7 @@ export default function Login() {
         {/* Left Side - Form */}
         <div className="login-form-side">
           <div className="login-header">
-            <Link to="/" className="logo-text">Almubarak</Link>
+            <Link to="/" className="logo-text">IB General Ent</Link>
             <h2>Welcome Back!</h2>
             <p>Please enter your details to sign in.</p>
           </div>
@@ -232,7 +232,7 @@ export default function Login() {
         <div className="login-image-side">
           <div className="image-content">
             <h2>Shop Smarter, Live Better</h2>
-            <p>Access exclusive deals, track your orders, and enjoy a seamless shopping experience.</p>
+            <p>Access exclusive electronics deals, track your orders, and enjoy a seamless shopping experience.</p>
           </div>
         </div>
       </div>

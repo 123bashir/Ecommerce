@@ -45,7 +45,7 @@ export default function About() {
                 <p>
                   Our e-commerce platform was built with one goal — to make online
                   shopping simple, affordable, and enjoyable. We offer a wide
-                  variety of products, from fashion to electronics, at unbeatable
+                  variety of products, from laptops to smartphones, at unbeatable
                   prices.
                 </p>
                 <p>
@@ -99,7 +99,7 @@ export default function About() {
           </div>
           <div className="footer-bottom">
             <div className="container text-center">
-              <p>© {new Date().getFullYear()} Almubarak Cosmetics. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} IB General Ent. All rights reserved.</p>
             </div>
           </div>
         </footer>

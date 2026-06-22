@@ -42,22 +42,20 @@ export default function CustomerProfile() {
     }
 
     // Load user data
-    if (currentUser) {
-      setFormData({
-        name: currentUser.name || '',
-        email: currentUser.email || '',
-        phone: currentUser.phone || '',
-        address: currentUser.address || '',
-        city: currentUser.city || '',
-        country: currentUser.country || 'Nigeria'
-      });
+    setFormData({
+      name: currentUser?.name || 'Guest User',
+      email: currentUser?.email || 'guest@example.com',
+      phone: currentUser?.phone || '',
+      address: currentUser?.address || '',
+      city: currentUser?.city || '',
+      country: currentUser?.country || 'Nigeria'
+    });
 
-      if (currentUser.profile_image) {
-        if (currentUser.profile_image.startsWith('http')) {
-          setImagePreview(currentUser.profile_image);
-        } else {
-          setImagePreview(`${FILE_BASE_URL}${currentUser.profile_image}`);
-        }
+    if (currentUser?.profile_image) {
+      if (currentUser.profile_image.startsWith('http')) {
+        setImagePreview(currentUser.profile_image);
+      } else {
+        setImagePreview(`${FILE_BASE_URL}${currentUser.profile_image}`);
       }
     }
   }, [currentUser]);
@@ -127,7 +125,7 @@ export default function CustomerProfile() {
         profile_image: profileImageUrl
       };
 
-      const response = await apiPut(`/customers/${currentUser.id}`, updatePayload);
+      const response = await apiPut(`/customers/${currentUser?.id || 'guest'}`, updatePayload);
 
       if (response.success) {
         const updatedUser = { ...currentUser, ...formData };

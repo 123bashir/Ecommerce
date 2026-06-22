@@ -1,12 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import axios from 'axios';
 import { AuthContext } from "../context/AuthContext";
-import { apiPost } from "../utils/api";
+import { apiGet, apiPost } from "../utils/api";
 
-// Development API URL
-
-const API_URL = 'https://api.almubarakcosmetics.com.ng/api'
 
 
 export default function ShopList() {
@@ -38,19 +34,19 @@ export default function ShopList() {
     const search = searchParams.get('search') || '';
     const category = searchParams.get('category') || 'All';
     const branch = searchParams.get('branch') || '';
-    
+
     setSearchQuery(search);
     setSelectedCategory(category);
     setSelectedBranch(branch);
-    
+
     // Refetch products when search params change
     fetchProducts();
   }, [searchParams]);
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API_URL}/categories/`);
-      setCategories(response.data?.data || response.data || []);
+      const response = await apiGet('/categories/');
+      setCategories(response.data || []);
     } catch (err) {
       console.error('Error fetching categories:', err);
     }
@@ -69,8 +65,8 @@ export default function ShopList() {
       if (category && category !== 'All') params.category_id = category;
       if (branch) params.branch = branch;
 
-      const response = await axios.get(`${API_URL}/products/totalProduct`, { params });
-      const productsData = response.data?.data || response.data || [];
+      const response = await apiGet('/products/totalProduct', params);
+      const productsData = response.data || [];
 
       // Process products to handle images properly
       const processedProducts = productsData.map(product => {
@@ -108,10 +104,10 @@ export default function ShopList() {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    
+
     // Clear existing timeout
     if (searchTimeout) clearTimeout(searchTimeout);
-    
+
     // Set new timeout to update URL (which triggers fetchProducts)
     const timeout = setTimeout(() => {
       const params = new URLSearchParams(searchParams);
@@ -122,7 +118,7 @@ export default function ShopList() {
       }
       navigate(`/shop-list?${params.toString()}`, { replace: true });
     }, 500); // 500ms debounce
-    
+
     setSearchTimeout(timeout);
   };
 
@@ -147,11 +143,7 @@ export default function ShopList() {
 
   const handleAddToCart = async (e, product) => {
     e.preventDefault();
-    if (!currentUser) {
-      setToast({ type: 'error', message: "Login first please" });
-      setTimeout(() => navigate("/login"), 1500);
-      return;
-    }
+
 
     try {
       setAddingToCart(product.id || product.product_id);
@@ -346,7 +338,7 @@ export default function ShopList() {
 
       <div className="shop-list-header">
         <h1>Our Products</h1>
-        <p>Browse our wide range of Blouse and Cosmetics products</p>
+        <p>Browse our wide range of Laptops and Electronics products</p>
       </div>
 
       <div className="shop-list-filters">
@@ -358,7 +350,7 @@ export default function ShopList() {
               style={{ minWidth: '200px' }}
             >
               <option value="All">All Categories</option>
-              {categories.map(category => (
+              {Array.isArray(categories) && categories.map(category => (
                 <option key={category.id || category.category_id} value={category.id || category.category_id}>
                   {category.name}
                 </option>
@@ -444,7 +436,7 @@ export default function ShopList() {
                         </span>
                       </div>
                       <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#007bff' }}>
-                        ₦{parseFloat(product.price || 0).toFixed(2)}
+                        ₦{parseFloat(product.price || 0).toLocaleString()}
                       </div>
                       <Link
                         to={`/product/${productId}`}

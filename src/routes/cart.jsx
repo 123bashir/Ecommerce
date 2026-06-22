@@ -31,20 +31,14 @@ export default function Cart() {
   const [selectedItems, setSelectedItems] = useState(new Set());
 
   useEffect(() => {
-    if (!authLoading && !currentUser) {
-      navigate("/login");
-      return;
-    }
-    if (currentUser) {
-      fetchCart();
-    }
+    fetchCart();
   }, [currentUser, authLoading, navigate]);
 
   const fetchCart = async () => {
     try {
       setLoading(true);
       const response = await apiGet("/cart");
-      const items = response.data?.data || response.data || [];
+      const items = response.data?.items || response.data?.data || (Array.isArray(response.data) ? response.data : []);
       setCartItems(items);
       // Select all items by default
       setSelectedItems(new Set(items.map(item => item.cart_item_id)));

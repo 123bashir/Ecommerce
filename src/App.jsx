@@ -16,13 +16,7 @@ import ProductDetail from "./routes/productDetail";
 import NotFound from "./routes/notfound";
 import PaymentCompletion from "./routes/paymentCompletion";
 
-// ProtectedRoute uses AuthContext
-const ProtectedRoute = ({ element }) => {
-  const { currentUser, loading } = useContext(AuthContext);
 
-  if (loading) return null; // Or a spinner
-  return currentUser ? element : <Navigate to="/login" replace />;
-};
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -49,10 +43,10 @@ function App() {
     { path: "/product/:id", element: <ProductDetail /> },
 
     // Protected Routes
-    { path: "/checkout", element: <ProtectedRoute element={<Checkout />} /> },
-    { path: "/payment-completion", element: <ProtectedRoute element={<PaymentCompletion />} /> },
-    { path: "/allOrders", element: <ProtectedRoute element={<AllOrders />} /> },
-    { path: "/customerProfile", element: <ProtectedRoute element={<CustomerProfile />} /> },
+    { path: "/checkout", element: <Checkout /> },
+    { path: "/payment-completion", element: <PaymentCompletion /> },
+    { path: "/allOrders", element: <AllOrders /> },
+    { path: "/customerProfile", element: <CustomerProfile /> },
     // { path: "/dashboard", element: <ProtectedRoute element={<Dashboard />} /> }, // Removed as per request
 
     {

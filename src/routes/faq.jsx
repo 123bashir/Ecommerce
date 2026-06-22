@@ -41,7 +41,7 @@ export default function Faq() {
     {
       icon: <FaHeadset />,
       question: "How can I contact support?",
-      answer: "Our support team is available 24/7. You can reach us via the contact page or by sending an email to support@almubarak.ng."
+      answer: "Our support team is available 24/7. You can reach us via the contact page or by sending an email to support@ibgeneral.ng."
     }
   ];
 
@@ -115,7 +115,7 @@ export default function Faq() {
           </div>
           <div className="footer-bottom">
             <div className="container text-center">
-              <p>© {new Date().getFullYear()} Almubarak Cosmetics. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} IB General Ent. All rights reserved.</p>
             </div>
           </div>
         </footer>

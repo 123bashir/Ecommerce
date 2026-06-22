@@ -94,7 +94,7 @@ export default function Register() {
         {/* Left Side - Form */}
         <div className="register-form-side">
           <div className="register-header">
-            <Link to="/" className="logo-text">Almubarak</Link>
+            <Link to="/" className="logo-text">IB General Ent</Link>
             <h2>Create Account</h2>
             <p>Join us to start shopping for quality products.</p>
           </div>

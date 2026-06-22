@@ -75,8 +75,9 @@ const Checkout = () => {
 
             const response = await apiGet("/cart");
             if (response.success) {
-                setCartItems(response.data.items || []);
-                setTotalAmount(response.data.totalAmount || 0);
+                const items = Array.isArray(response.data) ? response.data : (response.data.items || []);
+                setCartItems(items);
+                setTotalAmount(items.reduce((sum, item) => sum + item.price * item.quantity, 0));
             }
         } catch (error) {
             // console.error("Error fetching cart:", error);
@@ -130,10 +131,7 @@ const Checkout = () => {
     const handlePaymentMethodSelect = async (method) => {
         try {
             // Validation
-            if (!currentUser?.id) {
-                showCustomAlert("Please login to complete your order.", 'error');
-                return;
-            }
+
 
             if (!totalAmount || totalAmount <= 0) {
                 showCustomAlert("Your cart is empty or total is invalid.", 'error');
@@ -141,7 +139,7 @@ const Checkout = () => {
             }
 
             /* console.log("Creating order with:", {
-                customer_id: currentUser.id,
+                customer_id: currentUser?.id || 'guest-123',
                 total_amount: totalAmount,
                 items_count: cartItems.length
             }); */
@@ -149,7 +147,7 @@ const Checkout = () => {
             let orderData;
             if (orderType === 'delivery') {
                 const response = await apiPost("/orders", {
-                    customer_id: currentUser.id,
+                    customer_id: currentUser?.id || 'guest-123',
                     customer_name: `${formData.firstName} ${formData.lastName}`,
                     customer_email: formData.email,
                     total_amount: totalAmount,

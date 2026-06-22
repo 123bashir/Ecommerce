@@ -8,23 +8,13 @@ import { apiGet, FILE_BASE_URL } from "../utils/api";
 // const API_URL = 'http://localhost:3000/api';
 
 // Production API URL (uncomment when DNS is configured)
-const API_URL = 'https://api.almubarakcosmetics.com.ng/api';
+const API_URL = ''; // Mocked via utils/api.js
 
 // Hardcoded hero images
 const HERO_IMAGES = [
-  'assets/images/hero/a.jpg',
-  'assets/images/hero/b.jpg',
-  'assets/images/hero/c.jpg',
-  'assets/images/hero/d.jpg',
-  'assets/images/hero/e.jpg',
-  'assets/images/hero/f.jpg',
-  'assets/images/hero/g.jpeg',
-  'assets/images/hero/h.jpeg',
-  'assets/images/hero/i.jpeg',
-  'assets/images/hero/j.jpeg',
-  'assets/images/hero/k.jpeg',
-  'assets/images/hero/l.jpeg',
-
+  'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1200', // Laptop
+  'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=1200', // Smartphone & Gadgets
+  'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80&w=1200', // Electronics
 ];
 
 export default function Dashboard() {
@@ -65,8 +55,8 @@ export default function Dashboard() {
     // Fetch categories
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_URL}/categories/`);
-        setCategories(response.data?.data || response.data || []);
+        const response = await apiGet('/categories/');
+        setCategories(response.data || []);
       } catch (err) {
         console.error('Error fetching categories:', err);
         setError('Failed to load categories');
@@ -76,8 +66,8 @@ export default function Dashboard() {
     // Fetch all products
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${API_URL}/products/totalProduct`);
-        const productsData = response.data?.data || response.data || [];
+        const response = await apiGet('/products/totalProduct');
+        const productsData = response.data || [];
 
         // Process products to handle images properly
         const processedProducts = productsData.map(product => {
@@ -149,44 +139,48 @@ export default function Dashboard() {
 
 
     if (typeof window !== "undefined" && typeof window.tns === "function") {
-      try {
-        window.tns({
-          container: ".hero-slider",
-          slideBy: "page",
-          autoplay: true,
-          autoplayButtonOutput: false,
-          mouseDrag: true,
-          gutter: 0,
-          items: 1,
-          nav: false,
-          controls: true,
-          controlsText: [
-            '<i class="lni lni-chevron-left"></i>',
-            '<i class="lni lni-chevron-right"></i>'
-          ]
-        });
-      } catch (e) {
-        // no-op if already initialized or if container missing
+      if (document.querySelector(".hero-slider")) {
+        try {
+          window.tns({
+            container: ".hero-slider",
+            slideBy: "page",
+            autoplay: true,
+            autoplayButtonOutput: false,
+            mouseDrag: true,
+            gutter: 0,
+            items: 1,
+            nav: false,
+            controls: true,
+            controlsText: [
+              '<i class="lni lni-chevron-left"></i>',
+              '<i class="lni lni-chevron-right"></i>'
+            ]
+          });
+        } catch (e) {
+          // no-op if already initialized
+        }
       }
 
-      try {
-        window.tns({
-          container: ".brands-logo-carousel",
-          autoplay: true,
-          autoplayButtonOutput: false,
-          mouseDrag: true,
-          gutter: 15,
-          nav: false,
-          controls: false,
-          responsive: {
-            0: { items: 1 },
-            540: { items: 3 },
-            768: { items: 5 },
-            992: { items: 6 }
-          }
-        });
-      } catch (e) {
-        // optional carousel, safe to ignore if not present
+      if (document.querySelector(".brands-logo-carousel")) {
+        try {
+          window.tns({
+            container: ".brands-logo-carousel",
+            autoplay: true,
+            autoplayButtonOutput: false,
+            mouseDrag: true,
+            gutter: 15,
+            nav: false,
+            controls: false,
+            responsive: {
+              0: { items: 1 },
+              540: { items: 3 },
+              768: { items: 5 },
+              992: { items: 6 }
+            }
+          });
+        } catch (e) {
+          // optional carousel, safe to ignore if not present
+        }
       }
     }
   }, []);
@@ -265,8 +259,8 @@ export default function Dashboard() {
         params.category_id = category;
       }
 
-      const response = await axios.get(`${API_URL}/products/totalProduct`, { params });
-      const productsData = response.data?.data || response.data || [];
+      const response = await apiGet('/products/totalProduct', params);
+      const productsData = response.data || [];
 
       // Process products to handle images
       const processedResults = productsData.map(product => {
@@ -452,7 +446,7 @@ export default function Dashboard() {
                 <div className="welcome-text">
                   <p style={{ margin: 0, fontSize: '14px', color: '#333', fontWeight: 500 }}>
                     <i className="lni lni-cart-full" style={{ color: '#007bff', marginRight: '8px' }}></i>
-                    Welcome to Almubarak - Your Premium Online Store
+                    Welcome to IB General Ent - Your Premium Electronics Store
                   </p>
                 </div>
               </div>
@@ -544,7 +538,7 @@ export default function Dashboard() {
                           }}
                         >
                           <option value="All">All</option>
-                          {categories.map(category => (
+                          {Array.isArray(categories) && categories.map(category => (
                             <option key={category.id || category.category_id} value={category.id || category.category_id}>
                               {category.name}
                             </option>
@@ -919,7 +913,7 @@ export default function Dashboard() {
                     <i className="lni lni-menu"></i>All Categories
                   </span>
                   <ul className="sub-category">
-                    {categories.length > 0 ? (
+                    {Array.isArray(categories) && categories.length > 0 ? (
                       categories.map(category => (
                         <li key={category.id || category.category_id}>
                           <Link to={`/product-grids?category=${category.id || category.category_id}`}>
@@ -1171,7 +1165,7 @@ export default function Dashboard() {
                       }}>
                         <h2 style={{ color: '#fff', fontSize: '20px', marginBottom: '10px' }}>
                           {index === 0 && <span style={{ display: 'block', fontSize: '14px', marginBottom: '5px' }}>Featured</span>}
-                          Healthcare Excellence
+                          Electronics Excellence
                         </h2>
                         {index === 1 && (
                           <div className="button">
@@ -1233,13 +1227,13 @@ export default function Dashboard() {
           }
         `}</style>
                 <p>
-                  Explore a thoughtfully curated collection of beauty essentials designed to enhance your natural glow. At Almubarak Cosmetics, we bring you quality, elegance, and confidence—beautifully delivered
+                  Explore a thoughtfully curated collection of premium electronics designed to enhance your modern lifestyle. At IB General Ent, we bring you quality, innovation, and performance—beautifully delivered
                 </p>
               </div>
             </div>
           </div>
           <div className="row">
-            {products.length > 0 ? (
+            {Array.isArray(products) && products.length > 0 ? (
               products.slice(0, 8).map((product) => {
                 const productId = product.id || product.product_id;
                 const productName = product.name || product.product_name;
@@ -1365,9 +1359,9 @@ export default function Dashboard() {
           </div>
           <div className="row">
             <div className="col-12 text-center" style={{ marginTop: '40px' }}>
-              <Link 
-                to="/shop-list" 
-                className="btn" 
+              <Link
+                to="/shop-list"
+                className="btn"
                 style={{
                   padding: '12px 35px',
                   fontSize: '16px',
@@ -1406,7 +1400,7 @@ export default function Dashboard() {
                 <div className="content">
                   <h2 className="wow fadeInUp" data-wow-delay=".4s">
                     Get the Best Deals
-                    <br /> on Almubarak
+                    <br /> on IB General Ent
                   </h2>
                   <p className="wow fadeInUp" data-wow-delay=".6s">
                     Shop now and enjoy exclusive offers and discounts.
@@ -1431,7 +1425,7 @@ export default function Dashboard() {
               <div
                 className="single-banner"
                 style={{
-                  backgroundImage: 'url(assets/images/banner/aa.jpg)',
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1526738549149-8e07eca275d4?auto=format&fit=crop&q=80&w=800)',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center'
                 }}
@@ -1453,7 +1447,7 @@ export default function Dashboard() {
               <div
                 className="single-banner custom-responsive-margin"
                 style={{
-                  backgroundImage: 'url(assets/images/banner/bb.jpg)',
+                  backgroundImage: 'url(https://images.unsplash.com/photo-1461151304267-38535e770f71?auto=format&fit=crop&q=80&w=800)',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center'
                 }}
@@ -1571,7 +1565,7 @@ export default function Dashboard() {
                       </li>
                     </ul>
                     <p className="mail">
-                      <a href="mailto:no-reply@almubarakcosmetics.com.ng">support@almubarakcosmetics.com</a>
+                      <a href="mailto:support@ibgeneral.ng">support@ibgeneral.ng</a>
                     </p>
                   </div>
                 </div>

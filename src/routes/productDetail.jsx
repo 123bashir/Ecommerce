@@ -27,7 +27,7 @@ const resolveImage = (path) => {
 };
 
 const buildPlaceholder = (text) => {
-  if (!text) return "AM";
+  return "IB";
   return text
     .split(" ")
     .map((part) => part.charAt(0).toUpperCase())
@@ -54,17 +54,7 @@ export default function ProductDetail() {
   const [adding, setAdding] = useState(false);
   const [toast, setToast] = useState(null);
 
-  useEffect(() => {
-    if (!authLoading && !currentUser) {
-      setToast({
-        type: "error",
-        message: "Login first please",
-      });
-      // Delay redirect slightly to show toast
-      const timer = setTimeout(() => navigate("/login"), 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [currentUser, authLoading, navigate]);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -79,7 +69,7 @@ export default function ProductDetail() {
 
         if (cancelled) return;
 
-        const productPayload = productResponse?.data?.data || productResponse?.data || productResponse;
+        const productPayload = productResponse?.data || productResponse;
 
         if (!productPayload) {
           throw new Error("Product data not found");
@@ -96,7 +86,7 @@ export default function ProductDetail() {
             category_id: productPayload.categoryId
           });
 
-          const relatedItems = relatedResponse?.data?.data || relatedResponse?.data || [];
+          const relatedItems = relatedResponse?.data || [];
           setRelatedProducts(
             relatedItems.filter((item) => (item.id || item.product_id) !== (productPayload.id || productPayload.product_id))
           );
@@ -145,13 +135,7 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = async () => {
-    if (!currentUser) {
-      setToast({
-        type: "error",
-        message: "Login first please",
-      });
-      return navigate("/login");
-    }
+
     if (!product) return;
     try {
       setAdding(true);

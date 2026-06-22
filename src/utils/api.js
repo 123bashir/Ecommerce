@@ -1,149 +1,89 @@
-import { getStoredToken, clearStoredUser } from './session';
+import { MOCK_CATEGORIES, MOCK_PRODUCTS } from './mockData';
+import { getStoredUser } from './session';
 
-// Use environment variable or fallback to localhost
-// For production, set VITE_API_URL in .env to https://api.almubarakcosmetics.com.ng/api
-const API_BASE_URL = (import.meta.env.VITE_API_URL || "https://api.almubarakcosmetics.com.ng/api").replace(/\/$/, '');
+export const FILE_BASE_URL = '';
 
-export const FILE_BASE_URL = API_BASE_URL.replace(/\/api$/, '');
+// Helper to simulate network delay
+const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
 
-const buildUrl = (endpoint, params = {}) => {
-  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  const url = new URL(`${API_BASE_URL}${normalizedEndpoint}`);
-  Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') return;
-    url.searchParams.append(key, value);
-  });
-  return url.toString();
-};
+export const apiGet = async (endpoint, params = {}) => {
+  await delay();
+  console.log(`Mock GET: ${endpoint}`, params);
 
-const parseResponse = async (response) => {
-  const contentType = response.headers.get('content-type') || '';
-  const isJson = contentType.includes('application/json');
-  const payload = isJson ? await response.json() : await response.text();
+  if (endpoint.includes('/categories')) return { success: true, data: MOCK_CATEGORIES };
 
-  if (response.status === 401 || response.status === 403) {
-    const message = payload?.message || (typeof payload === 'string' ? payload : 'Unauthorized');
-    
-    // Only redirect and clear user if NOT on the login page
-    // and if it's not a login-related error
-    if (window.location.pathname !== '/login') {
-      clearStoredUser();
-      window.location.href = '/login';
-      throw new Error('Session expired. Please login again.');
+  if (endpoint.includes('/products/totalProduct')) {
+    let filteredProducts = [...MOCK_PRODUCTS];
+    if (params?.category_id && params.category_id !== 'All') {
+      filteredProducts = filteredProducts.filter(p => String(p.category_id) === String(params.category_id));
     }
-    
-    // If we are already on login page, just throw the actual error message
-    throw new Error(message);
+    if (params?.search) {
+      const query = params.search.toLowerCase();
+      filteredProducts = filteredProducts.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query)
+      );
+    }
+    return { success: true, data: filteredProducts };
   }
 
-  if (!response.ok) {
-    // Handle both success: false format and direct error messages
-    const message = payload?.message || (typeof payload === 'string' ? payload : 'Request failed');
-    throw new Error(message);
-  }
-  // Return the payload directly (backend returns { success: true, data: {...} } or { success: true, message: "..." })
-  return payload;
-};
-
-const withAuthHeaders = (headers = {}) => {
-  const token = getStoredToken();
-  if (!token) return headers;
-  return {
-    ...headers,
-    Authorization: `Bearer ${token}`,
-  };
-};
-
-export const apiGet = async (endpoint, params = {}, options = {}) => {
-  const url = buildUrl(endpoint, params);
-  const mergedHeaders = withAuthHeaders(options.headers);
-  const response = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    ...options,
-    headers: mergedHeaders,
-  });
-  return parseResponse(response);
-};
-
-export const apiPost = async (endpoint, body = {}, options = {}) => {
-  const url = buildUrl(endpoint);
-  const isFormData = body instanceof FormData;
-
-  const headers = {
-    ...withAuthHeaders(options.headers),
-  };
-
-  if (!isFormData) {
-    headers['Content-Type'] = 'application/json';
+  if (endpoint.includes('/products/product/')) {
+    const id = endpoint.split('/').pop();
+    const product = MOCK_PRODUCTS.find(p => String(p.id) === String(id) || String(p.product_id) === String(id));
+    return { success: true, data: product };
   }
 
-  const response = await fetch(url, {
-    method: 'POST',
-    credentials: 'include',
-    ...options,
-    headers,
-    body: isFormData ? body : JSON.stringify(body),
-  });
-  return parseResponse(response);
-};
-
-export const apiPut = async (endpoint, body = {}, options = {}) => {
-  const url = buildUrl(endpoint);
-  const isFormData = body instanceof FormData;
-
-  const headers = {
-    ...withAuthHeaders(options.headers),
-  };
-
-  if (!isFormData) {
-    headers['Content-Type'] = 'application/json';
+  if (endpoint.includes('/orders/my-orders') || endpoint.includes('/pickup/my-pickups')) {
+    return { success: true, data: [] }; // Mock empty orders
   }
 
-  const response = await fetch(url, {
-    method: 'PUT',
-    credentials: 'include',
-    ...options,
-    headers,
-    body: isFormData ? body : JSON.stringify(body),
-  });
-  return parseResponse(response);
-};
-
-export const apiPatch = async (endpoint, body = {}, options = {}) => {
-  const url = buildUrl(endpoint);
-  const isFormData = body instanceof FormData;
-
-  const headers = {
-    ...withAuthHeaders(options.headers),
-  };
-
-  if (!isFormData) {
-    headers['Content-Type'] = 'application/json';
+  if (endpoint.includes('/cart')) {
+    return { success: true, data: [] }; // Mock empty cart
   }
 
-  const response = await fetch(url, {
-    method: 'PATCH',
-    credentials: 'include',
-    ...options,
-    headers,
-    body: isFormData ? body : JSON.stringify(body),
-  });
-  return parseResponse(response);
+  return { success: true, data: null };
 };
 
-export const apiDelete = async (endpoint, options = {}) => {
-  const url = buildUrl(endpoint);
-  const mergedHeaders = {
-    'Content-Type': 'application/json',
-    ...withAuthHeaders(options.headers),
-  };
-  const response = await fetch(url, {
-    method: 'DELETE',
-    credentials: 'include',
-    ...options,
-    headers: mergedHeaders,
-  });
-  return parseResponse(response);
+export const apiPost = async (endpoint, body = {}) => {
+  await delay();
+  console.log(`Mock POST: ${endpoint}`, body);
+
+  if (endpoint.includes('/login')) {
+    // Mock successful login for any credentials
+    return {
+      success: true,
+      data: {
+        id: 1,
+        firstName: 'IB',
+        lastName: 'User',
+        email: body.email || 'user@example.com',
+        token: 'mock-jwt-token'
+      }
+    };
+  }
+
+  if (endpoint.includes('/register')) {
+    return { success: true, message: 'User registered successfully' };
+  }
+
+  return { success: true, data: body };
+};
+
+export const apiPut = async (endpoint, body = {}) => {
+  await delay();
+  console.log(`Mock PUT: ${endpoint}`, body);
+  return { success: true, data: body };
+};
+
+export const apiPatch = async (endpoint, body = {}) => {
+  await delay();
+  console.log(`Mock PATCH: ${endpoint}`, body);
+  return { success: true, data: body };
+};
+
+export const apiDelete = async (endpoint) => {
+  await delay();
+  console.log(`Mock DELETE: ${endpoint}`);
+  return { success: true, message: 'Deleted successfully' };
 };
 

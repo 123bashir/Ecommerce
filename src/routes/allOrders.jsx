@@ -36,10 +36,7 @@ export default function AllOrders() {
       preloader.style.display = 'none';
     }
 
-    // Fetch orders only if user is available
-    if (currentUser) {
-      fetchOrders();
-    }
+    fetchOrders();
   }, [currentUser]);
 
   const fetchOrders = async () => {
