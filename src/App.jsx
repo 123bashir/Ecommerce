@@ -53,7 +53,9 @@ function App() {
       path: "*",
       element: <NotFound />,
     },
-  ]);
+  ], {
+    basename: "/Ecommerce"
+  });
 
   return (
     <>
